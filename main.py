@@ -2,6 +2,8 @@ import json
 from keyword import kwlist as reserved_words
 from pathlib import Path
 
+import requests
+
 # Model types
 BASIC_MODELS = "BasicModels"
 COMPLEX_MODELS = "ComplexModels"
@@ -25,6 +27,8 @@ COMPLEX_MODELS_FILE = OUTPUT_DIR / f"{COMPLEX_MODELS}.py"
 
 # Swagger from web
 # TODO ! Тащить сваггер из сети
+# SWAGGER_URL = None
+SWAGGER_URL = "http://ozon-courier-chameleon-master.dev.a.o3.ru:84/swagger.json"
 
 # Swagger input dir
 
@@ -69,7 +73,15 @@ class Application:
         self.special_detections = {ENUM: False, DATETIME: False}
         self.model = []
         self.models = {BASIC_MODELS: [], COMPLEX_MODELS: []}
-        self.swagger = self.open_swagger_file(SWAGGER_FILE)
+
+        if not SWAGGER_URL and not SWAGGER_FILE:
+            raise Exception("You must set at least one: SWAGGER_URL or SWAGGER_FILE")
+
+        elif SWAGGER_URL:
+            self.swagger = requests.get(SWAGGER_URL).raise_for_status().json()
+
+        else:
+            self.swagger = self.open_swagger_file(SWAGGER_FILE)
 
         for schema_name, schema in self.swagger["components"]["schemas"].items():
             self.extract_model(schema_name, schema)
