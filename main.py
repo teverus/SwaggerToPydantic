@@ -26,17 +26,13 @@ BASIC_MODELS_FILE = OUTPUT_DIR / f"{BASIC_MODELS}.py"
 COMPLEX_MODELS_FILE = OUTPUT_DIR / f"{COMPLEX_MODELS}.py"
 
 # Swagger from web
-# TODO ! Тащить сваггер из сети
-# SWAGGER_URL = None
-SWAGGER_URL = "http://ozon-courier-chameleon-master.dev.a.o3.ru:84/swagger.json"
+SWAGGER_URL = None
 
 # Swagger input dir
 
 # Enter path from root folder (root is implied, not stated)
-# For example, [root] - Files should be Path("Files")
-SWAGGER_DIR = Path("Files")
-
-SWAGGER_FILE = SWAGGER_DIR / "known_swagger2.json"
+# For example, [root] - Files - Swagger should be Path("Files") / "Swagger" / "sw.json"
+SWAGGER_FILE = None
 
 # Type converter
 TYPES = {"string": "str", "integer": "int", "number": "int", "boolean": "bool"}
@@ -78,7 +74,7 @@ class Application:
             raise Exception("You must set at least one: SWAGGER_URL or SWAGGER_FILE")
 
         elif SWAGGER_URL:
-            self.swagger = requests.get(SWAGGER_URL).raise_for_status().json()
+            self.swagger = requests.get(SWAGGER_URL).json()
 
         else:
             self.swagger = self.open_swagger_file(SWAGGER_FILE)
